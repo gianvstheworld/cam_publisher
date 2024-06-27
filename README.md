@@ -1,9 +1,8 @@
-
 # cam_publisher
 
 ## Overview
 
-O pacote `cam_publisher` é um nó ROS desenvolvido para capturar imagens de uma câmera e publicá-las em um tópico ROS. Ele utiliza OpenCV para captura de imagens e `cv_bridge` para converter imagens OpenCV para mensagens ROS. Os parâmetros de calibração da câmera são carregados de um arquivo YAML.
+The `cam_publisher` package is a ROS node developed to capture images from a camera and publish them on a ROS topic. It uses OpenCV for image capture and `cv_bridge` to convert OpenCV images to ROS messages. The camera calibration parameters are loaded from a YAML file.
 
 **Keywords:** ROS, OpenCV, Camera, Image Publisher
 
@@ -21,9 +20,9 @@ sudo rosdep install --from-paths src
 
 ## Config Files
 
-### Configuração da Câmera
+### Camera Configuration
 
-Arquivos de configuração da câmera, como por exemplo (`config/front_camera.yaml`):
+Camera configuration files, such as (`config/front_camera.yaml`):
 
 ```yaml
 image_width: 1920
@@ -49,9 +48,9 @@ projection_matrix:
 
 ## Launch Files
 
-### Launch File Principal
+### Main Launch File
 
-Arquivo de lançamento principal (`launch/cam_publisher.launch`):
+Main launch file (`launch/cam_publisher.launch`):
 
 ```xml
 <launch>
@@ -67,14 +66,14 @@ Arquivo de lançamento principal (`launch/cam_publisher.launch`):
 
 ### image_publisher
 
-O nó `image_publisher` lê imagens de uma câmera e publica as imagens já em um tópico ROS.
+The `image_publisher` node reads images from a camera and publishes the images on a ROS topic.
 
 #### Published Topics
 
-- `/camera/image` (`sensor_msgs/Image`): Imagens capturadas pela câmera.
+- `/camera/image` (`sensor_msgs/Image`): Images captured by the camera.
 
 #### Parameters
 
-- `camera_info_yaml` (string): Caminho para o arquivo YAML contendo os parâmetros de calibração da câmera.
-- `device` (int): Número do dispositivo da câmera.
-- `topic_name` (string): Nome do tópico onde as imagens serão publicadas. Default: "camera".
+- `camera_info_yaml` (string): Path to the YAML file containing the camera calibration parameters.
+- `device` (int): Camera device number.
+- `topic_name` (string): Name of the topic where images will be published. Default: "camera".
