@@ -14,13 +14,24 @@
 #include "image_transport/image_transport.h"
 #include "std_msgs/Header.h"
 
-void get_calib_params(const std::string& yaml_file, sensor_msgs::CameraInfoPtr cam_info) {
+cv::Size get_calib_params(const std::string& yaml_file, sensor_msgs::CameraInfoPtr cam_info) {
     /*
-    @brief: Get calibration parameters for the camera
-    @param: Camera object, CameraInfo message
+    @brief: Get calibration parameters for the camera and return the resolution
+    @param: YAML file path, CameraInfo message
+    @return: Camera resolution as cv::Size
     */
+    cv::Size resolution;
     try {
         YAML::Node config = YAML::LoadFile(yaml_file);
+
+        if (config["image_width"] && config["image_height"]) {
+            int width = config["image_width"].as<int>();
+            int height = config["image_height"].as<int>();
+            resolution = cv::Size(width, height);
+        } else {
+            ROS_ERROR("Failed to read image width and height from YAML");
+            return resolution; // Return empty resolution if failed
+        }
 
         if (config["camera_matrix"] && config["camera_matrix"]["data"]) {
             std::vector<double> K = config["camera_matrix"]["data"].as<std::vector<double>>();
@@ -83,6 +94,8 @@ void get_calib_params(const std::string& yaml_file, sensor_msgs::CameraInfoPtr c
     } catch (const YAML::Exception& e) {
         ROS_ERROR("YAML Exception: %s", e.what());
     }
+
+    return resolution;
 }
 
 void image_publisher(cv::Mat cam_image, image_transport::CameraPublisher cam_pub, std::string topic_name, std_msgs::Header image_header, sensor_msgs::ImagePtr cam_msg, sensor_msgs::CameraInfoPtr cam_info) {
@@ -118,8 +131,10 @@ int main(int argc, char **argv) {
 
     int deviceNode;
     n.getParam("device", deviceNode);
-    cv::Size frameSize(1920, 1080); ///< default frame size 1920x1080
     int fps = 30; ///< default camera fps: 30
+
+    bool invert_image;
+    n.param("invert_image", invert_image, false);
 
     // Get the topic name as a parameter
     std::string topic_name;
@@ -127,6 +142,14 @@ int main(int argc, char **argv) {
 
     if (deviceNode < 0) {
         ROS_ERROR("Invalid camera device node: %d", deviceNode);
+        return 1;
+    }
+
+    sensor_msgs::CameraInfoPtr cam_info(new sensor_msgs::CameraInfo());
+    cv::Size frameSize = get_calib_params(yaml_path, cam_info);
+
+    if (frameSize.width == 0 || frameSize.height == 0) {
+        ROS_ERROR("Failed to get valid resolution from YAML");
         return 1;
     }
 
@@ -148,10 +171,6 @@ int main(int argc, char **argv) {
 
     std_msgs::Header image_header;
     sensor_msgs::ImagePtr cam_msg;
-    sensor_msgs::CameraInfoPtr cam_info(new sensor_msgs::CameraInfo());
-
-    // Get calibration parameters for the camera
-    get_calib_params(yaml_path, cam_info);
 
     ros::Rate loop_rate(fps);
     while (ros::ok() && cam.isOpened()) {
@@ -160,7 +179,13 @@ int main(int argc, char **argv) {
 
         if (cam_image.empty()) {
             ROS_WARN("Captured empty frame");
+            cam.startCapture();
+            usleep(500000);
             continue;
+        }
+
+        if (invert_image) {
+            cv::flip(cam_image, cam_image, -1);
         }
 
         image_header.stamp = ros::Time::now();

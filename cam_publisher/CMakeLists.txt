@@ -163,6 +163,7 @@ add_executable(camera_node
 add_dependencies(camera_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(camera_node
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   ${YAML_CPP_LIBRARIES}
 )
 
