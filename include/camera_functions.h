@@ -11,7 +11,7 @@ public:
     @brief: Constructor
     @param: ROS NodeHandle, Device node, Backend
     */
-    Camera(ros::NodeHandle& nh, int deviceNode, int backend = cv::CAP_V4L2);  
+    Camera(ros::NodeHandle& nh, int deviceNode, int backend = cv::CAP_ANY);  
     ~Camera();
 
     bool isOpened() const;

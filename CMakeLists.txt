@@ -10,7 +10,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  cv_bridge
   image_transport
   roscpp
   sensor_msgs
@@ -163,6 +162,7 @@ add_executable(camera_node
 add_dependencies(camera_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(camera_node
   ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   ${YAML_CPP_LIBRARIES}
 )
 
