@@ -224,8 +224,6 @@ int main(int argc, char **argv) {
 
         if (cam_image.empty()) {
             ROS_WARN("Captured empty frame");
-            cam.startCapture();
-            usleep(500000);
             continue;
         }
 
