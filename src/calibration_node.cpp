@@ -31,7 +31,6 @@ sensor_msgs::CameraInfoPtr create_camera_info(const cv::Size& frameSize) {
     sensor_msgs::CameraInfoPtr cam_info(new sensor_msgs::CameraInfo());
     cam_info->width = frameSize.width;
     cam_info->height = frameSize.height;
-    // Preencher com informações básicas
     cam_info->K = {1.0, 0.0, frameSize.width / 2.0, 0.0, 1.0, frameSize.height / 2.0, 0.0, 0.0, 1.0};
     cam_info->P = {1.0, 0.0, frameSize.width / 2.0, 0.0, 0.0, 1.0, frameSize.height / 2.0, 0.0, 0.0, 0.0, 1.0, 0.0};
     return cam_info;
@@ -79,7 +78,6 @@ int main(int argc, char **argv) {
     std_msgs::Header image_header;
     sensor_msgs::CameraInfoPtr cam_info = create_camera_info(frameSize);
 
-    // Adicione o serviço
     ros::ServiceServer service = nh.advertiseService<sensor_msgs::SetCameraInfo::Request, sensor_msgs::SetCameraInfo::Response>(
         topic_name + "/set_camera_info",
         boost::bind(setCameraInfoCallback, _1, _2, cam_info)
@@ -90,7 +88,7 @@ int main(int argc, char **argv) {
         cv::Mat cam_image;
         cam >> cam_image;
 
-        cv::flip(cam_image, cam_image, -1);
+        // cv::flip(cam_image, cam_image, -1);
 
         image_header.stamp = ros::Time::now();
         image_publisher(cam_image, cam_pub, cam_info_pub, topic_name, image_header, cam_info);

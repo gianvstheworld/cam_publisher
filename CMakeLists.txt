@@ -11,6 +11,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   image_transport
+  cv_bridge
   roscpp
   sensor_msgs
   std_msgs
@@ -155,9 +156,9 @@ add_library(camera
 # add_executable(${PROJECT_NAME}_node src/cam_publisher_node.cpp)
 
 add_executable(camera_node 
-  src/camera_node.cpp
-  src/camera_functions.cpp
-  # src/calibration_node.cpp
+  # src/camera_node.cpp
+  # src/camera_functions.cpp
+  src/calibration_node.cpp
   )
 add_dependencies(camera_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(camera_node
